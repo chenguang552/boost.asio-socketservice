@@ -1,7 +1,26 @@
 #include "client.h"
 
-CClient::CClient(boost::asio::io_service& ioService, boost::asio::ip::tcp::endpoint& endPoint)
+CClient::CClient(boost::asio::io_service& ioClient, boost::asio::ip::tcp::endpoint& endPoint)
+    : mIoContext(ioClient)
+    , mSocket(mIoContext)
 {
-    std::shared_ptr<boost::asio::ip::tcp::socket> sock(
-        new boost::asio::ip::tcp::socket(ioc, ep.protocol()));
+    mSocket.connect(endPoint);
+    start();
+}
+
+CClient::~CClient()
+{
+}
+
+void CClient::start()
+{
+    std::string strIn;
+
+    char inBuf[512] = { 0 };
+    while (1) {
+        strIn.clear();
+        std::cin >> strIn;
+        memcpy(inBuf, strIn.c_str(), strIn.length());
+        boost::asio::write(mSocket, boost::asio::buffer(inBuf));
+    }
 }

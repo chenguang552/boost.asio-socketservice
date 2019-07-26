@@ -2,6 +2,11 @@
 #define SESSION2
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <time.h>
+//#include <unordered_map>
+
+#include "dopost.h"
 
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -29,19 +34,23 @@ public:
     boost::asio::ip::tcp::socket& socket(void);
 
 private:
-	
     // 读取成功后触发的函数
     void read_handler(const boost::system::error_code& errorCode);
 
+    // 解析http协议
+    void parseHttpGet(const boost::system::error_code& errorCode, const char* reqType, std::string& strData);
+    void parseHttpPost(const boost::system::error_code& errorCode, const char* reqType, std::string& strData);
+    // 结束http响应
+    void finishResponse();
+
 private:
-	
     // 临时信息缓冲区
-    char cData[512];
-    
+    char cData[1024];
+
     std::string strMsg;
-    
+
     boost::asio::ip::tcp::socket mSocket;
-    	
+
     // 回调
     pSessionCallback* mCallBack;
 };
