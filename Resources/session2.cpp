@@ -78,13 +78,27 @@ void CSession2::parseHttpGet(const boost::system::error_code& errorCode, const c
     inf.open(finalUrl.c_str());
     std::string buf = "";
     std::string response = "HTTP/1.1 200 OK\r\nContent-Type:text/html; charset=UTF-8\r\n\r\n";
-    if (inf.is_open())
+    if (inf.is_open()) {
         std::cout << "file is open" << std::endl;
-    // 返回响应
-    while (std::getline(inf, buf)) {
-        response += buf;
-        response += "\r\n";
-        length += buf.length();
+
+        // 返回响应
+        while (std::getline(inf, buf)) {
+            response += buf;
+            response += "\r\n";
+            length += buf.length();
+        }
+
+    } else {
+        if (httpUrl.find(".do") != std::string::npos || httpUrl.find(".jsp") != std::string::npos || httpUrl.find(".asp") != std::string::npos || httpUrl.find(".php") != std::string::npos || httpUrl.find(".html") != std::string::npos || httpUrl.find(".htm") != std::string::npos || httpUrl.find(".aspx") != std::string::npos) {
+            response = "HTTP/1.1 404 OK\r\nContent-Type:text/html; charset=UTF-8\r\n\r\n \
+        <html> \
+        <title>404</title> \
+        <body> \
+        <h1>404</h1> \
+        <h2> Page Not Found<h2> \
+        </body> \
+        </html>";
+        }
     }
 
     // std::cout << "response:\n" << response << std::endl;
